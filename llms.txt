@@ -1,4 +1,4 @@
-# runledger
+# RunLedger
 
 > Tamper-evident local execution ledger for AI agents: hash-chained tool calls, decisions, retries, results and verifiable HTML reports.
 
@@ -16,7 +16,7 @@ RunLedger is a local TypeScript execution ledger for AI-agent runs. It stores st
 
 ## What problem it solves
 
-Each event includes the previous event hash. Editing, deleting or reordering recorded events breaks chain verification.
+AI-agent execution history is often mutable, incomplete or split across providers. RunLedger keeps a local structured history that can be independently checked for tampering.
 
 ## Key topics
 

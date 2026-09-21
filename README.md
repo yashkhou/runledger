@@ -121,6 +121,12 @@ It can record tool calls, tool results, decisions, retries and other structured 
 - [ ] Diff reports between two runs
 - [ ] Runtime adapters
 
+## Related tools
+
+- [BrowserProof](https://github.com/yashkhou/browserproof) - browser-state verification for AI agents and Playwright workflows.
+- [RunLedger](https://github.com/yashkhou/runledger) - tamper-evident execution history for AI-agent runs.
+- [ActionMesh](https://github.com/yashkhou/actionmesh) - typed action contracts for tools, HTTP and CLI.
+
 ## Development
 
 ```bash

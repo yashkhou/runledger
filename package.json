@@ -1,6 +1,6 @@
 {
   "name": "runledger",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Tamper-evident local execution ledger for AI agents: hash-chained tool calls, decisions, retries, results and verifiable HTML reports.",
   "type": "module",
   "bin": {
