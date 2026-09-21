@@ -1,7 +1,7 @@
 {
   "name": "runledger",
   "version": "0.2.0",
-  "description": "Tamper-evident local execution ledger for AI agents.",
+  "description": "Tamper-evident local execution ledger for AI agents: hash-chained tool calls, decisions, retries, results and verifiable HTML reports.",
   "type": "module",
   "bin": {
     "runledger": "./dist/cli.js"
@@ -15,11 +15,16 @@
   },
   "keywords": [
     "ai-agents",
-    "observability",
+    "agent-observability",
+    "agent-debugging",
     "audit-log",
     "provenance",
-    "debugging",
+    "tamper-evident",
+    "hash-chain",
+    "execution-trace",
     "agentic-ai",
+    "mcp",
+    "local-first",
     "typescript"
   ],
   "license": "MIT",
@@ -34,5 +39,15 @@
   "devDependencies": {
     "@types/node": "^22.0.0",
     "typescript": "^5.9.0"
+  },
+  "author": {
+    "name": "Yash",
+    "url": "https://github.com/yashkhou"
+  },
+  "bugs": {
+    "url": "https://github.com/yashkhou/runledger/issues"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
