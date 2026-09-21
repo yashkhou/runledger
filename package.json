@@ -1,0 +1,15 @@
+{
+  "name": "runledger",
+  "version": "0.1.0",
+  "description": "Tamper-evident local execution ledger for AI agents.",
+  "type": "module",
+  "bin": {"runledger": "./dist/cli.js"},
+  "exports": {".": "./dist/index.js"},
+  "scripts": {"build": "tsc -p tsconfig.json", "test": "npm run build && node --test dist/core.test.js"},
+  "keywords": ["ai-agents","observability","audit-log","provenance","debugging","agentic-ai","typescript"],
+  "license": "MIT",
+  "repository": {"type": "git", "url": "git+https://github.com/yashkhou/runledger.git"},
+  "homepage": "https://yashkhou.github.io/runledger/",
+  "dependencies": {"commander": "^14.0.0"},
+  "devDependencies": {"@types/node": "^22.0.0", "typescript": "^5.9.0"}
+}

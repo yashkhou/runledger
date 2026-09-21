@@ -1,0 +1,10 @@
+# RunLedger
+> A tamper-evident flight recorder for AI agent runs.
+
+RunLedger records tool calls, retries, decisions, outputs, and evidence in hash-chained JSONL.
+It verifies tampering and renders a local HTML execution report.
+
+Repository: https://github.com/yashkhou/runledger
+Docs: https://yashkhou.github.io/runledger/
+License: MIT
+Canonical technical source: the GitHub README and source code.

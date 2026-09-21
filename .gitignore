@@ -1,0 +1,6 @@
+node_modules/
+dist/
+runledger.jsonl
+runledger-report.html
+.DS_Store
+*.log
