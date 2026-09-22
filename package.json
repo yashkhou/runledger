@@ -1,6 +1,6 @@
 {
   "name": "runledger",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Tamper-evident local execution ledger for AI agents: hash-chained tool calls, decisions, retries, results and verifiable HTML reports.",
   "type": "module",
   "bin": {
@@ -9,9 +9,15 @@
   "exports": {
     ".": "./dist/index.js"
   },
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node --test dist/core.test.js"
+    "test": "npm run build && node --test dist/core.test.js dist/flight-recorder.test.js dist/adapters.test.js"
   },
   "keywords": [
     "ai-agents",

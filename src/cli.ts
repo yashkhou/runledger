@@ -1,9 +1,11 @@
 #!/usr/bin/env node
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import { Command } from "commander";
 import { makeEvent, verifyLedger } from "./core.js";
 import { appendLedger, readLedger } from "./io.js";
 import { renderLedger } from "./report.js";
+import { McpJsonRpcAdapter, ingestRuntime, parseJsonRecords } from "./adapters.js";
+import { FlightRecorder } from "./flight-recorder.js";
 
 const program = new Command().name("runledger").description("Tamper-evident execution logs for AI agents.");
 program.command("add").argument("<type>").argument("<json>")
@@ -26,4 +28,19 @@ program.command("report").option("-f, --file <file>", "Ledger JSONL", "runledger
     await writeFile(options.out, renderLedger(await readLedger(options.file)));
     console.log(options.out);
   });
+
+program.command("ingest")
+  .argument("<adapter>", "Runtime adapter (currently: mcp)")
+  .argument("<input>", "JSON, JSON array, or JSONL input file")
+  .option("-o, --out <file>", "Flight run JSON", "runledger-flight.json")
+  .action(async (adapterName, input, options) => {
+    if (adapterName !== "mcp") throw new Error(`Unknown adapter: ${adapterName}`);
+    const recorder = new FlightRecorder();
+    const adapter = new McpJsonRpcAdapter();
+    const records = parseJsonRecords(await readFile(input, "utf8"));
+    for (const record of records) ingestRuntime(recorder, adapter, record);
+    await recorder.save(options.out);
+    console.log(`${options.out} (${recorder.run.events.length} events, ${recorder.verify().ok ? "VERIFIED" : "BROKEN"})`);
+  });
+
 await program.parseAsync();

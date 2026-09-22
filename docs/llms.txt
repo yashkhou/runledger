@@ -12,7 +12,7 @@
 
 ## What it is
 
-RunLedger is a local TypeScript execution ledger for AI-agent runs. It stores structured events in JSONL and links them with SHA-256 so later tampering can be detected.
+RunLedger is a local TypeScript execution ledger for AI-agent runs. It stores structured events in JSONL, links them with SHA-256 so later tampering can be detected, and can ingest runtime-native events through adapters. MCP JSON-RPC is the first built-in adapter.
 
 ## What problem it solves
 
@@ -25,7 +25,7 @@ ai-agents, agent-observability, agent-debugging, audit-log, provenance, tamper-e
 ## Frequently asked questions
 
 ### What is RunLedger?
-RunLedger is a local TypeScript execution ledger for AI-agent runs. It stores structured events in JSONL and links them with SHA-256 so later tampering can be detected.
+RunLedger is a local TypeScript execution ledger for AI-agent runs. It stores structured events in JSONL, links them with SHA-256 so later tampering can be detected, and can ingest runtime-native events through adapters. MCP JSON-RPC is the first built-in adapter.
 
 ### What does tamper-evident mean?
 Each event includes the previous event hash. Editing, deleting or reordering recorded events breaks chain verification.

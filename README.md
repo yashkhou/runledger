@@ -34,6 +34,7 @@ When an autonomous run fails, ordinary logs are often incomplete, mutable, or sc
 - Tool call, result, decision and retry events
 - Tamper detection for edits, removals and reordering
 - Human-readable HTML report
+- Runtime adapter core with MCP JSON-RPC ingestion
 - Zero database or hosted telemetry required
 
 ## Real demo
@@ -54,7 +55,30 @@ node dist/cli.js add decision '{"choice":"verify","confidence":0.94}'
 node dist/cli.js add tool.result '{"ok":true,"title":"Example Domain"}'
 node dist/cli.js verify
 node dist/cli.js report
+
+# Convert an MCP JSON/JSONL transcript into a verified flight run
+node dist/cli.js ingest mcp examples/mcp-session.jsonl -o mcp-flight.json
 ```
+
+## Runtime ingestion
+
+RunLedger v0.4 adds a small adapter contract so runtimes can translate their native events into the same tamper-evident flight format. MCP JSON-RPC is the first built-in adapter.
+
+```ts
+import { FlightRecorder, McpJsonRpcAdapter, ingestRuntime } from "runledger";
+
+const recorder = new FlightRecorder();
+const mcp = new McpJsonRpcAdapter();
+
+ingestRuntime(recorder, mcp, {
+  jsonrpc: "2.0",
+  id: 1,
+  method: "tools/call",
+  params: { name: "browser.open", arguments: { url: "https://example.com" } },
+});
+```
+
+The MCP adapter correlates `tools/call` request IDs with their JSON-RPC responses, preserving the originating tool name for both successful results and errors. It also accepts wrapped records such as `{ direction, message }` and JSON-RPC batches.
 
 ## Small example
 
@@ -72,9 +96,10 @@ node dist/cli.js report
 
 ```mermaid
 flowchart LR
-    A[Agent runtime] --> B[tool.call]
+    A[Agent runtime] --> R[Runtime adapter]
+    R --> B[tool.call]
     A --> C[decision / retry]
-    A --> D[tool.result]
+    R --> D[tool.result / error]
     B --> E[RunLedger]
     C --> E
     D --> E
@@ -113,13 +138,18 @@ No. The core ledger, verification and HTML reporting workflow is local-first and
 
 It can record tool calls, tool results, decisions, retries and other structured execution events from an autonomous workflow.
 
+### Can it import MCP traffic?
+
+Yes. The built-in MCP adapter ingests JSON-RPC `tools/call` requests and correlates their responses into tool-call, tool-result and error flight events. The CLI accepts JSON, JSON arrays and JSONL transcripts.
+
 ## Roadmap
 
 - [ ] Optional Ed25519 signatures
 - [ ] OpenTelemetry exporter
 - [ ] Screenshot and file evidence manifests
 - [ ] Diff reports between two runs
-- [ ] Runtime adapters
+- [x] Runtime adapter core + MCP JSON-RPC adapter
+- [ ] Additional runtime adapters (OpenTelemetry, agent SDKs)
 
 ## Related tools
 

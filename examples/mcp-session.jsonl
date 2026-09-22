@@ -1,0 +1,2 @@
+{"direction":"client_to_server","message":{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"browser.open","arguments":{"url":"https://example.com"}}}}
+{"direction":"server_to_client","message":{"jsonrpc":"2.0","id":1,"result":{"content":[{"type":"text","text":"Example Domain"}]}}}
