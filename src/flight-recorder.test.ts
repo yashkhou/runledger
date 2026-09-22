@@ -1,0 +1,4 @@
+import test from'node:test';import assert from'node:assert/strict';import{FlightRecorder,compareRuns}from'./flight-recorder.js';
+test('verifies chain and recovery tail',()=>{const r=new FlightRecorder('demo');r.record({kind:'intent',action:'fix tests'});r.checkpoint('clean');r.record({kind:'tool_call',action:'npm test'});r.record({kind:'error',action:'npm test',error:'failed'});assert.deepEqual(r.verify(),{ok:true});assert.equal(r.recoveryPlan().length,2)});
+test('detects tampering',()=>{const r=new FlightRecorder();r.record({kind:'decision',action:'patch',output:'A'});r.run.events[0].output='B';assert.equal(r.verify().ok,false)});
+test('compares runs',()=>{const a=new FlightRecorder(),b=new FlightRecorder();a.record({kind:'tool_call',action:'build',output:'ok'});b.record({kind:'tool_call',action:'build',output:'failed'});assert.equal(compareRuns(a.run,b.run).same,false)});

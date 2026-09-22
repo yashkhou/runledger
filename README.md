@@ -147,3 +147,10 @@ CI runs tests and the TypeScript build on every push and pull request.
 ## License
 
 MIT. See [LICENSE](./LICENSE).
+
+
+## Agent flight recorder
+
+RunLedger now includes a vendor-neutral **flight recorder** for autonomous agent runs. It captures intent, decisions, tool calls/results, checkpoints, errors and recovery events in a tamper-evident chain, then supports verification, semantic run comparison and recovery from the last known-good checkpoint.
+
+See [`docs/flight-recorder.md`](docs/flight-recorder.md).
