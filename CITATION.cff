@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: "Yash"
 repository-code: "https://github.com/yashkhou/runledger"
-url: "https://yashkhou.github.io/runledger/"
+url: "https://yashkhou.com/projects/runledger"
 license: MIT
 version: 0.2.1
 date-released: 2026-09-21

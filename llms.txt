@@ -5,7 +5,7 @@
 ## Canonical sources
 
 - Repository: https://github.com/yashkhou/runledger
-- Documentation: https://yashkhou.github.io/runledger/
+- Documentation: https://yashkhou.com/projects/runledger
 - Releases: https://github.com/yashkhou/runledger/releases
 - Issues: https://github.com/yashkhou/runledger/issues
 - License: MIT

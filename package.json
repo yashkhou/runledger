@@ -38,7 +38,7 @@
     "type": "git",
     "url": "git+https://github.com/yashkhou/runledger.git"
   },
-  "homepage": "https://yashkhou.github.io/runledger/",
+  "homepage": "https://yashkhou.com/projects/runledger",
   "dependencies": {
     "commander": "^14.0.0"
   },

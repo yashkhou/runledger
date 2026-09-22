@@ -7,7 +7,7 @@
   <a href="https://github.com/yashkhou/runledger/releases/latest"><img alt="Release" src="https://img.shields.io/github/v/release/yashkhou/runledger?style=flat-square"></a>
   <a href="./LICENSE"><img alt="MIT License" src="https://img.shields.io/badge/license-MIT-111111?style=flat-square"></a>
   <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white">
-  <a href="https://yashkhou.github.io/runledger/"><img alt="Live docs" src="https://img.shields.io/badge/live-docs-c6ff4a?style=flat-square"></a>
+  <a href="https://yashkhou.com/projects/runledger"><img alt="Project page" src="https://img.shields.io/badge/project-page-c6ff4a?style=flat-square"></a>
 </p>
 
 <p align="center">
@@ -16,9 +16,8 @@
 </p>
 
 <p align="center">
-  <a href="https://yashkhou.github.io/runledger/"><strong>Live docs</strong></a> ·
-  <a href="https://yashkhou.github.io/runledger/real-report.html"><strong>Open the real verified ledger report</strong></a> ·
   <a href="https://yashkhou.com/projects/runledger"><strong>Project page</strong></a> ·
+  <a href="./docs/real-report.html"><strong>Report fixture</strong></a> ·
   <a href="https://github.com/yashkhou/runledger/releases/latest"><strong>Latest release</strong></a>
 </p>
 
@@ -40,7 +39,7 @@ When an autonomous run fails, ordinary logs are often incomplete, mutable, or sc
 ## Real demo
 
 
-**[Open the real verified ledger report →](https://yashkhou.github.io/runledger/real-report.html)**
+**[Inspect the verified report fixture →](./docs/real-report.html)**
 
 ## Quick start
 
@@ -169,8 +168,8 @@ CI runs tests and the TypeScript build on every push and pull request.
 
 ## Project links
 
-- **Docs:** https://yashkhou.github.io/runledger/
-- **Portfolio:** https://yashkhou.com/projects/runledger
+- **Docs source:** [docs/](docs/)
+- **Project page:** https://yashkhou.com/projects/runledger
 - **Source:** https://github.com/yashkhou/runledger
 - **Author:** [Yash](https://github.com/yashkhou) / [@yashkhou](https://x.com/yashkhou)
 

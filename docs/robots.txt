@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://yashkhou.github.io/runledger/sitemap.xml
+Sitemap: https://yashkhou.com/sitemap.xml
