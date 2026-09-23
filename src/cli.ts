@@ -6,6 +6,7 @@ import { appendLedger, readLedger } from "./io.js";
 import { renderLedger } from "./report.js";
 import { McpJsonRpcAdapter, ingestRuntime, parseJsonRecords } from "./adapters.js";
 import { FlightRecorder } from "./flight-recorder.js";
+import { evaluateRunPolicy, type RunPolicy } from "./policy.js";
 
 const program = new Command().name("runledger").description("Tamper-evident execution logs for AI agents.");
 program.command("add").argument("<type>").argument("<json>")
@@ -41,6 +42,17 @@ program.command("ingest")
     for (const record of records) ingestRuntime(recorder, adapter, record);
     await recorder.save(options.out);
     console.log(`${options.out} (${recorder.run.events.length} events, ${recorder.verify().ok ? "VERIFIED" : "BROKEN"})`);
+  });
+
+program.command("policy-check")
+  .argument("<run>", "Flight run JSON")
+  .argument("<policy>", "Policy JSON")
+  .action(async (runFile, policyFile) => {
+    const recorder = await FlightRecorder.load(runFile);
+    const policy = JSON.parse(await readFile(policyFile, "utf8")) as RunPolicy;
+    const result = evaluateRunPolicy(recorder.run, policy);
+    console.log(result.ok ? "POLICY OK" : JSON.stringify(result, null, 2));
+    process.exitCode = result.ok ? 0 : 2;
   });
 
 await program.parseAsync();

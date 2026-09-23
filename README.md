@@ -22,6 +22,27 @@
 </p>
 
 
+
+## Policy gates for agent fleets
+
+RunLedger can now enforce deterministic allow/deny policy against a recorded flight run before an autonomous agent result is accepted or promoted. Policies match event kind, actor and glob-style action names; explicit deny rules override allows, and `default: "deny"` enables allowlist mode.
+
+```json
+{
+  "default": "deny",
+  "rules": [
+    { "id": "github-read", "effect": "allow", "kind": "tool_call", "action": "github.read.*" },
+    { "id": "no-delete", "effect": "deny", "kind": "tool_call", "action": "*.delete" }
+  ]
+}
+```
+
+```bash
+runledger policy-check runledger-flight.json policy.json
+```
+
+A clean run exits `0`; a violation exits `2` and prints the exact event sequence and rule ID. This turns the ledger from passive observability into a CI-capable execution contract for parallel coding agents.
+
 ## Why I built this
 
 When an autonomous run fails, ordinary logs are often incomplete, mutable, or scattered across providers. RunLedger keeps a deliberately boring local record: one event per line, linked to the previous event by SHA-256, with a human-readable report when you need to inspect it.
