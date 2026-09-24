@@ -9,6 +9,7 @@ import { FlightRecorder } from "./flight-recorder.js";
 import { evaluateRunPolicy, type RunPolicy } from "./policy.js";
 import { createRunAttestationPayload, signRunAttestation, verifyRunAttestation, type SignedRunAttestation } from "./attestation.js";
 import { createRunStatement, signRunStatement, verifyRunStatement, type DsseEnvelope } from "./dsse.js";
+import { verifyRunGate } from "./gate.js";
 
 const program = new Command().name("runledger").description("Tamper-evident execution logs for AI agents.");
 program.command("add").argument("<type>").argument("<json>")
@@ -115,6 +116,26 @@ program.command("in-toto-verify")
     const result = verifyRunStatement(envelope, publicKey, { run, policy });
     console.log(result.ok ? "IN-TOTO ATTESTATION VERIFIED" : `IN-TOTO ATTESTATION INVALID: ${result.reason}`);
     process.exitCode = result.ok ? 0 : 4;
+  });
+
+
+program.command("gate")
+  .argument("<run>", "Flight run JSON")
+  .argument("<policy>", "Policy JSON")
+  .argument("<envelope>", "DSSE/in-toto attestation JSON")
+  .requiredOption("--public-key <file>", "Trusted Ed25519 public key PEM")
+  .action(async (runFile, policyFile, envelopeFile, options) => {
+    const recorder = await FlightRecorder.load(runFile);
+    const policy = JSON.parse(await readFile(policyFile, "utf8")) as RunPolicy;
+    const envelope = JSON.parse(await readFile(envelopeFile, "utf8")) as DsseEnvelope;
+    const publicKey = await readFile(options.publicKey, "utf8");
+    const result = verifyRunGate(recorder.run, policy, envelope, publicKey);
+    if (result.ok) {
+      console.log("GATE PASSED");
+      return;
+    }
+    console.log(JSON.stringify({ gate: "failed", ...result }, null, 2));
+    process.exitCode = 5;
   });
 
 await program.parseAsync();

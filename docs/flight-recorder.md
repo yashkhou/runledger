@@ -61,3 +61,14 @@ node dist/cli.js ingest mcp examples/mcp-session.jsonl -o mcp-flight.json
 The resulting file is a normal verified `FlightRun`; it can be loaded with `FlightRecorder.load()`, compared with another run, or used to produce a recovery plan.
 
 The format remains vendor-neutral so Codex, Claude Code, MCP, browser agents and local harnesses can converge on the same execution ledger without requiring a hosted observability service.
+
+
+## Trusted completion gate
+
+RunLedger 0.7 can reduce chain, policy, and signed-provenance verification to one deterministic gate:
+
+```bash
+runledger gate run.json policy.json run.dsse.json --public-key run.pub.pem
+```
+
+The gate fails closed. It checks the flight-run hash chain first, verifies the DSSE/in-toto statement against the trusted Ed25519 key and the exact run/policy digests, then requires the recomputed policy result to allow the run. This makes the same local evidence usable as a CI promotion condition or an agent-runtime completion contract.

@@ -69,6 +69,17 @@ runledger in-toto-verify run.dsse.json \
 
 The envelope uses DSSE pre-auth encoding before Ed25519 signing. Verification checks the trusted public key, DSSE signature, in-toto subject digest, RunLedger chain head and recomputed policy result. Existing `runledger attest` files remain supported; the DSSE path is an interoperability layer, not a replacement format.
 
+
+### Trusted runtime completion gate
+
+`runledger gate` collapses the trust checks into one deterministic acceptance decision for CI and autonomous runtimes:
+
+```bash
+runledger gate run.json policy.json run.dsse.json --public-key run.pub.pem
+```
+
+A run is accepted only when **all three layers** pass: the flight-run hash chain is intact, the DSSE/in-toto attestation verifies against the trusted key and exact run/policy evidence, and the policy evaluation allows the execution. Success exits `0` with `GATE PASSED`; any failure exits `5` with the failing stage (`chain`, `attestation`, or `policy`) and machine-readable details.
+
 ## Why I built this
 
 When an autonomous run fails, ordinary logs are often incomplete, mutable, or scattered across providers. RunLedger keeps a deliberately boring local record: one event per line, linked to the previous event by SHA-256, with a human-readable report when you need to inspect it.
@@ -84,6 +95,7 @@ When an autonomous run fails, ordinary logs are often incomplete, mutable, or sc
 - Deterministic allow/deny policy gates
 - Portable Ed25519-signed run + policy attestations
 - DSSE v1 + in-toto Statement v1 interoperability
+- One-command trusted runtime/CI completion gate
 - Zero database or hosted telemetry required
 
 ## Real demo
@@ -195,6 +207,7 @@ Yes. The built-in MCP adapter ingests JSON-RPC `tools/call` requests and correla
 
 - [x] Ed25519 signatures
 - [x] DSSE + in-toto signed statements
+- [x] Trusted runtime completion gate
 - [ ] OpenTelemetry exporter
 - [ ] Screenshot and file evidence manifests
 - [ ] Diff reports between two runs
