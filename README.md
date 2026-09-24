@@ -54,6 +54,21 @@ runledger attestation-verify attestation.json --run run.json --policy policy.jso
 
 Verification fails if the signature, run, policy, final chain head, or recomputed policy result no longer matches. Private keys are never embedded in the attestation; only the public key is portable.
 
+
+### DSSE + in-toto interoperability
+
+For systems that already consume software-supply-chain attestations, RunLedger can emit the same run and policy evidence as a **DSSE v1 envelope containing an in-toto Statement v1**. The in-toto subject digest is the canonical SHA-256 digest of the recorded agent run, while the RunLedger predicate preserves the final chain head, policy digest, policy outcome, violation count, issuer and timestamp.
+
+```bash
+runledger attest-in-toto run.json policy.json private.pem \
+  -o run.dsse.json --public-key-out run.pub.pem --issuer github-ci
+
+runledger in-toto-verify run.dsse.json \
+  --public-key run.pub.pem --run run.json --policy policy.json
+```
+
+The envelope uses DSSE pre-auth encoding before Ed25519 signing. Verification checks the trusted public key, DSSE signature, in-toto subject digest, RunLedger chain head and recomputed policy result. Existing `runledger attest` files remain supported; the DSSE path is an interoperability layer, not a replacement format.
+
 ## Why I built this
 
 When an autonomous run fails, ordinary logs are often incomplete, mutable, or scattered across providers. RunLedger keeps a deliberately boring local record: one event per line, linked to the previous event by SHA-256, with a human-readable report when you need to inspect it.
@@ -68,6 +83,7 @@ When an autonomous run fails, ordinary logs are often incomplete, mutable, or sc
 - Runtime adapter core with MCP JSON-RPC ingestion
 - Deterministic allow/deny policy gates
 - Portable Ed25519-signed run + policy attestations
+- DSSE v1 + in-toto Statement v1 interoperability
 - Zero database or hosted telemetry required
 
 ## Real demo
@@ -177,7 +193,8 @@ Yes. The built-in MCP adapter ingests JSON-RPC `tools/call` requests and correla
 
 ## Roadmap
 
-- [ ] Optional Ed25519 signatures
+- [x] Ed25519 signatures
+- [x] DSSE + in-toto signed statements
 - [ ] OpenTelemetry exporter
 - [ ] Screenshot and file evidence manifests
 - [ ] Diff reports between two runs

@@ -8,6 +8,7 @@ import { McpJsonRpcAdapter, ingestRuntime, parseJsonRecords } from "./adapters.j
 import { FlightRecorder } from "./flight-recorder.js";
 import { evaluateRunPolicy, type RunPolicy } from "./policy.js";
 import { createRunAttestationPayload, signRunAttestation, verifyRunAttestation, type SignedRunAttestation } from "./attestation.js";
+import { createRunStatement, signRunStatement, verifyRunStatement, type DsseEnvelope } from "./dsse.js";
 
 const program = new Command().name("runledger").description("Tamper-evident execution logs for AI agents.");
 program.command("add").argument("<type>").argument("<json>")
@@ -79,6 +80,41 @@ program.command("attestation-verify")
     const result = verifyRunAttestation(attestation, { run, policy, publicKey });
     console.log(result.ok ? "ATTESTATION VERIFIED" : `ATTESTATION INVALID: ${result.reason}`);
     process.exitCode = result.ok ? 0 : 3;
+  });
+
+
+program.command("attest-in-toto")
+  .argument("<run>", "Flight run JSON")
+  .argument("<policy>", "Policy JSON")
+  .argument("<privateKey>", "Ed25519 private key PEM")
+  .option("-o, --out <file>", "DSSE envelope JSON", "runledger-attestation.dsse.json")
+  .option("--public-key-out <file>", "Public key PEM", "runledger-attestation.pub.pem")
+  .option("--issuer <name>", "Attestation issuer")
+  .option("--keyid <id>", "Override DSSE keyid")
+  .action(async (runFile, policyFile, keyFile, options) => {
+    const recorder = await FlightRecorder.load(runFile);
+    if (!recorder.verify().ok) throw new Error("Cannot attest a broken flight-run hash chain");
+    const policy = JSON.parse(await readFile(policyFile, "utf8")) as RunPolicy;
+    const payload = createRunAttestationPayload(recorder.run, policy, { issuer: options.issuer });
+    const signed = signRunStatement(createRunStatement(payload), await readFile(keyFile, "utf8"), { keyid: options.keyid });
+    await writeFile(options.out, JSON.stringify(signed.envelope, null, 2));
+    await writeFile(options.publicKeyOut, signed.publicKey);
+    console.log(`${options.out} (${payload.policyOk ? "POLICY OK" : "POLICY DENIED"}, in-toto/DSSE)`);
+  });
+
+program.command("in-toto-verify")
+  .argument("<envelope>", "DSSE envelope JSON")
+  .requiredOption("--public-key <file>", "Trusted Ed25519 public key PEM")
+  .option("--run <file>", "Expected flight run JSON")
+  .option("--policy <file>", "Expected policy JSON")
+  .action(async (envelopeFile, options) => {
+    const envelope = JSON.parse(await readFile(envelopeFile, "utf8")) as DsseEnvelope;
+    const run = options.run ? (await FlightRecorder.load(options.run)).run : undefined;
+    const policy = options.policy ? JSON.parse(await readFile(options.policy, "utf8")) as RunPolicy : undefined;
+    const publicKey = await readFile(options.publicKey, "utf8");
+    const result = verifyRunStatement(envelope, publicKey, { run, policy });
+    console.log(result.ok ? "IN-TOTO ATTESTATION VERIFIED" : `IN-TOTO ATTESTATION INVALID: ${result.reason}`);
+    process.exitCode = result.ok ? 0 : 4;
   });
 
 await program.parseAsync();
