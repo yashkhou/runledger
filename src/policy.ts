@@ -10,6 +10,7 @@ export interface PolicyRule {
 
 export interface RunPolicy { default?: "allow" | "deny"; rules: PolicyRule[] }
 export interface PolicyViolation { seq: number; ruleId: string; kind: FlightEvent["kind"]; action?: string; actor?: string }
+export interface PolicyEvaluation { ok: boolean; violations: PolicyViolation[] }
 
 function glob(pattern: string | undefined, value: string | undefined): boolean {
   if (!pattern || pattern === "*") return true;
@@ -17,7 +18,7 @@ function glob(pattern: string | undefined, value: string | undefined): boolean {
   return new RegExp(`^${escaped}$`).test(value ?? "");
 }
 
-export function evaluateRunPolicy(run: FlightRun, policy: RunPolicy) {
+export function evaluateRunPolicy(run: FlightRun, policy: RunPolicy): PolicyEvaluation {
   const violations: PolicyViolation[] = [];
   for (const event of run.events) {
     const matches = policy.rules.filter(rule =>

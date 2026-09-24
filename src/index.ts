@@ -9,3 +9,5 @@ export * from "./policy.js";
 export * from "./attestation.js";
 
 export * from "./dsse.js";
+
+export * from "./gate.js";
