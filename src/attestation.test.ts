@@ -42,3 +42,11 @@ test("attests denied policy outcomes without claiming success", () => {
   assert.equal(payload.violations, 2);
   assert.deepEqual(verifyRunAttestation(attestation, { run: recorder.run, policy }), { ok: true });
 });
+
+
+test("serialized attestations without an issuer remain verifiable", () => {
+  const { recorder, policy, privateKey } = fixture();
+  const attestation = signRunAttestation(createRunAttestationPayload(recorder.run, policy), privateKey);
+  const roundTrip = JSON.parse(JSON.stringify(attestation));
+  assert.deepEqual(verifyRunAttestation(roundTrip, { run: recorder.run, policy }), { ok: true });
+});

@@ -7,3 +7,5 @@ export * from "./adapters.js";
 
 export * from "./policy.js";
 export * from "./attestation.js";
+
+export * from "./dsse.js";
