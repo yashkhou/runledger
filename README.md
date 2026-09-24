@@ -43,6 +43,17 @@ runledger policy-check runledger-flight.json policy.json
 
 A clean run exits `0`; a violation exits `2` and prints the exact event sequence and rule ID. This turns the ledger from passive observability into a CI-capable execution contract for parallel coding agents.
 
+## Signed execution attestations
+
+RunLedger can bind a verified flight run and its policy decision into a portable Ed25519-signed attestation. The signed payload contains the run digest, final event hash, policy digest, policy outcome and violation count, so CI or a downstream system can verify exactly which evidence and policy were approved.
+
+```bash
+runledger attest run.json policy.json private.pem -o attestation.json --issuer github-ci
+runledger attestation-verify attestation.json --run run.json --policy policy.json --public-key public.pem
+```
+
+Verification fails if the signature, run, policy, final chain head, or recomputed policy result no longer matches. Private keys are never embedded in the attestation; only the public key is portable.
+
 ## Why I built this
 
 When an autonomous run fails, ordinary logs are often incomplete, mutable, or scattered across providers. RunLedger keeps a deliberately boring local record: one event per line, linked to the previous event by SHA-256, with a human-readable report when you need to inspect it.
@@ -55,6 +66,8 @@ When an autonomous run fails, ordinary logs are often incomplete, mutable, or sc
 - Tamper detection for edits, removals and reordering
 - Human-readable HTML report
 - Runtime adapter core with MCP JSON-RPC ingestion
+- Deterministic allow/deny policy gates
+- Portable Ed25519-signed run + policy attestations
 - Zero database or hosted telemetry required
 
 ## Real demo

@@ -6,3 +6,4 @@ export * from './flight-recorder.js';
 export * from "./adapters.js";
 
 export * from "./policy.js";
+export * from "./attestation.js";

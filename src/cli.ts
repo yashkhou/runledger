@@ -7,6 +7,7 @@ import { renderLedger } from "./report.js";
 import { McpJsonRpcAdapter, ingestRuntime, parseJsonRecords } from "./adapters.js";
 import { FlightRecorder } from "./flight-recorder.js";
 import { evaluateRunPolicy, type RunPolicy } from "./policy.js";
+import { createRunAttestationPayload, signRunAttestation, verifyRunAttestation, type SignedRunAttestation } from "./attestation.js";
 
 const program = new Command().name("runledger").description("Tamper-evident execution logs for AI agents.");
 program.command("add").argument("<type>").argument("<json>")
@@ -53,6 +54,31 @@ program.command("policy-check")
     const result = evaluateRunPolicy(recorder.run, policy);
     console.log(result.ok ? "POLICY OK" : JSON.stringify(result, null, 2));
     process.exitCode = result.ok ? 0 : 2;
+  });
+
+program.command("attest")
+  .argument("<run>", "Flight run JSON").argument("<policy>", "Policy JSON").argument("<privateKey>", "Ed25519 private key PEM")
+  .option("-o, --out <file>", "Signed attestation JSON", "runledger-attestation.json").option("--issuer <name>", "Attestation issuer")
+  .action(async (runFile, policyFile, keyFile, options) => {
+    const recorder = await FlightRecorder.load(runFile);
+    if (!recorder.verify().ok) throw new Error("Cannot attest a broken flight-run hash chain");
+    const policy = JSON.parse(await readFile(policyFile, "utf8")) as RunPolicy;
+    const payload = createRunAttestationPayload(recorder.run, policy, { issuer: options.issuer });
+    const attestation = signRunAttestation(payload, await readFile(keyFile, "utf8"));
+    await writeFile(options.out, JSON.stringify(attestation, null, 2));
+    console.log(`${options.out} (${payload.policyOk ? "POLICY OK" : "POLICY DENIED"})`);
+  });
+
+program.command("attestation-verify")
+  .argument("<attestation>", "Signed attestation JSON").option("--run <file>", "Expected flight run JSON").option("--policy <file>", "Expected policy JSON").option("--public-key <file>", "Trusted Ed25519 public key PEM")
+  .action(async (attestationFile, options) => {
+    const attestation = JSON.parse(await readFile(attestationFile, "utf8")) as SignedRunAttestation;
+    const run = options.run ? (await FlightRecorder.load(options.run)).run : undefined;
+    const policy = options.policy ? JSON.parse(await readFile(options.policy, "utf8")) as RunPolicy : undefined;
+    const publicKey = options.publicKey ? await readFile(options.publicKey, "utf8") : undefined;
+    const result = verifyRunAttestation(attestation, { run, policy, publicKey });
+    console.log(result.ok ? "ATTESTATION VERIFIED" : `ATTESTATION INVALID: ${result.reason}`);
+    process.exitCode = result.ok ? 0 : 3;
   });
 
 await program.parseAsync();
