@@ -16,6 +16,10 @@
 </p>
 
 <p align="center">
+  <img src="./assets/demo.svg" width="820" alt="RunLedger demo: three events recorded, verify passes, one line edited, verify fails at event 1">
+</p>
+
+<p align="center">
   <a href="https://yashkhou.com/projects/runledger"><strong>Project page</strong></a> ·
   <a href="./docs/real-report.html"><strong>Report fixture</strong></a> ·
   <a href="https://github.com/yashkhou/runledger/releases/latest"><strong>Latest release</strong></a>
