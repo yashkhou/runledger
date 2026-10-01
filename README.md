@@ -23,6 +23,15 @@
 
 
 
+## Try it in 30 seconds
+
+```bash
+npm install github:yashkhou/runledger
+npx runledger add tool.call '{"name":"browser.open","url":"https://example.com"}'
+npx runledger add tool.result '{"ok":true}'
+npx runledger verify        # → VERIFIED. Edit runledger.jsonl by hand and run it again.
+```
+
 ## Policy gates for agent fleets
 
 RunLedger can now enforce deterministic allow/deny policy against a recorded flight run before an autonomous agent result is accepted or promoted. Policies match event kind, actor and glob-style action names; explicit deny rules override allows, and `default: "deny"` enables allowlist mode.
